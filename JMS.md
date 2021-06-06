@@ -1,4 +1,4 @@
-## Pasi JMS
+## JMS steps
 
 ```
 https://github.com/critoma/dad/tree/master/lectures/c10/src/apachetomeejms
