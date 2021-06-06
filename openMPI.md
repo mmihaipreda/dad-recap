@@ -1,5 +1,10 @@
-## Open MPI
+## Open MPI 
 
+### More information:
+```
+https://github.com/critoma/dad/tree/master/lectures/c08/openmpi
+
+```
 #### The sum of two arrays in MPI
 
 ```
