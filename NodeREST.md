@@ -1,6 +1,6 @@
-##Pasi NodeREST
+## Pasi NodeREST
 
-###1. Create the file
+### 1. Create the file
 
 ```
 const express = require('express');
@@ -46,7 +46,7 @@ app.post('/sum', (req, res) => {
 
 ```
 
-###`Post payload`
+### `Post payload`
 
 ```
 {
@@ -55,7 +55,7 @@ app.post('/sum', (req, res) => {
 }
 ```
 
-###`data.json`
+### `data.json`
 
 ```
 [
