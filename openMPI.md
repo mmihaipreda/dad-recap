@@ -1,6 +1,6 @@
-##Open MPI
+## Open MPI
 
-####The sum of two arrays in MPI
+#### The sum of two arrays in MPI
 
 ```
 #include<stdio.h>
