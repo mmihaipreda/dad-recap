@@ -1,4 +1,4 @@
-##Pasi JMS
+## Pasi JMS
 
 ```
 https://github.com/critoma/dad/tree/master/lectures/c10/src/apachetomeejms
@@ -9,7 +9,7 @@ https://github.com/critoma/dad/tree/master/lectures/c10/src/apachetomeejms
 2. Define `MessageReceiver`
 3. Define `JMS`
 
-###1. Define `MessageProducer`
+### 1. Define `MessageProducer`
 
 ```
 package apachetomeejms;
@@ -99,7 +99,7 @@ public class MessageProducerClient {
 }
 ```
 
-###2. Define `MessageReceiver`
+### 2. Define `MessageReceiver`
 
 ```
 package apachetomeejms;
@@ -232,7 +232,7 @@ class TextListener implements MessageListener {
 
 ```
 
-###3. Define `JMS`
+### 3. Define `JMS`
 
 ```
 package apachetomeejms;
