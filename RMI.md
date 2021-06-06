@@ -1,5 +1,6 @@
-## Pasi RMI
+## RMI Steps
 
+### More information:
 ```
 https://github.com/critoma/dad/tree/master/lectures/c06/src/S12_RMI
 
