@@ -1,5 +1,6 @@
-##Pasi RMI
+## RMI Steps
 
+### More information:
 ```
 https://github.com/critoma/dad/tree/master/lectures/c06/src/S12_RMI
 
@@ -11,7 +12,7 @@ https://github.com/critoma/dad/tree/master/lectures/c06/src/S12_RMI
 4. Define Main Prog Server
 5. Define Main Prog Client and call the method
 
-###1. Define ServerInterface ( extend Remote)
+### 1. Define ServerInterface ( extend Remote)
 
 ```
 package eu.ase.rmi;
@@ -24,7 +25,7 @@ public interface SampleServerInterface extends Remote
 }
 ```
 
-###2. Implement ServerInterface
+### 2. Implement ServerInterface
 
 ```
 package eu.ase.rmi;
@@ -48,7 +49,7 @@ public class SampleServerImpl extends UnicastRemoteObject
 
 ```
 
-###3. Write policy
+### 3. Write policy
 
 ```
 // this policy file should only be used for testing and not deployed
@@ -58,7 +59,7 @@ grant {
 
 ```
 
-###4. Define Main Prog Server
+### 4. Define Main Prog Server
 
 ```
 package eu.ase.rmi;
@@ -94,7 +95,7 @@ public class SampleServerProgMain
 
 ```
 
-###5. Define Main Prog Client and call the method
+### 5. Define Main Prog Client and call the method
 
 ```
 package eu.ase.rmi;

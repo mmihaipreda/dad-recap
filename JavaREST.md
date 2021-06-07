@@ -1,17 +1,17 @@
-##Pasi JavaREST
+## JavaREST steps
 
 ```
 https://github.com/critoma/dad/tree/master/lectures/c08/rest/s08_jweb_jaxrs_server
 ```
 
-1. Create a folder in src named `bean`
+1. Create a folder in src named `bean` ( `src/eu/ase/java/bean` )
 2. Create model class/classes
-   2.1.`Product.java`
-   2.2.`Status.java`
-3. Create a folder in src name `rest`
-4. Create REST Server
-   4.1.`MyRESTServices.java`
-   4.2.`ProductCatalogResource.java`
+- - 2.1.`Product.java`
+- - 2.2.`Status.java`
+ 3. Create a folder in src name `rest` (  `src/eu/ase/java/rest`  )
+ 4. Create REST Server
+- - 4.1.`MyRESTServices.java`
+ - - 4.2.`ProductCatalogResource.java`
 
 ###1. Create a folder in src named `bean`
 

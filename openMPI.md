@@ -1,6 +1,11 @@
-##Open MPI
+## Open MPI 
 
-####The sum of two arrays in MPI
+### More information:
+```
+https://github.com/critoma/dad/tree/master/lectures/c08/openmpi
+
+```
+#### The sum of two arrays in MPI
 
 ```
 #include<stdio.h>

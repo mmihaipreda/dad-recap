@@ -1,10 +1,14 @@
-##Open MP
+## Open MP
+### More information:
+```
+https://github.com/critoma/dad/tree/master/lectures/c08/HPC_OpenMP
 
-#####1.Please write C code using OpenMP for addition in paralel of the items from 1 array.
-#####2.Please write C code using OpenMP for finding the minimum of items from 1 array.
-#####3. OpenMP code for calculating in parallel of average o an array
+```
+##### 1.Please write C code using OpenMP for addition in paralel of the items from 1 array.
+##### 2.Please write C code using OpenMP for finding the minimum of items from 1 array.
+##### 3. OpenMP code for calculating in parallel of average o an array
 
-###1.Please write C code using OpenMP for addition in paralel of the items from 1 array.
+### 1.Please write C code using OpenMP for addition in paralel of the items from 1 array.
 
 ```
 #include<stdio.h>
@@ -35,7 +39,7 @@ int main()
 }
 ```
 
-###2.Please write C code using OpenMP for finding the minimum of items from 1 array.
+### 2.Please write C code using OpenMP for finding the minimum of items from 1 array.
 
 ```
 #include<stdio.h>
@@ -81,7 +85,7 @@ int main()
 
 ```
 
-###3. OpenMP code for calculating in parallel of average o an array
+### 3. OpenMP code for calculating in parallel of average o an array
 
 ```
 float arrayAverage(int* a, int n){
