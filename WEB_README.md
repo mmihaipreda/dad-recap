@@ -5,6 +5,8 @@ This readme contains all the steps for developing practic example of
 
 -   JAVA REST
 -   Node REST
+-   JSP (without template JSP/JSPX)
+-   ASP Theory
 
 ## JavaREST steps
 
@@ -378,3 +380,305 @@ app.post('/sum', (req, res) => {
 ]
 
 ```
+
+## JSP steps (without jsp/ jspx)
+
+1. In Eclipse `Create new Dynamic Project`
+2. Create in `src/main/java` a package `exercises`
+3. Create in `src/webapp` `index.html`
+4. Create a `Utils` class to generate HTML responses more easily
+5. Add different exercises (e.g. `Exercise1.java` )
+
+### Exercise 1 - Please give the source code statement for handling a HTTP POST request in a servlet with parameter p1 and extract the value of it and convert to the Integer if the case.
+
+### `Utils.java`
+
+```
+package exercises;
+
+import java.io.PrintWriter;
+
+public class Utils {
+
+	public static void generateHTML(PrintWriter out, String divId, String title, String parameter) {
+
+		 out.write("<html><body><div id='"+ divId +"'>");
+		 out.write("<h2>" + title +"</h2>");
+		 out.write("<p>param1: " + parameter + "</p>");
+		 out.write("</div></body></html>");
+
+
+	}
+}
+
+```
+
+### `Index.html`
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Web and Cloud security - Recap</title>
+</head>
+<body>
+
+
+	<h3>Web and Cloud security - Recap</h3>
+
+	<ul>
+			<!-- http://localhost:8080/Web_Recap/Exercise1?p1=443 -->
+		<li><a href="Exercise1" target="_blank">Exercise 1 (doPost)</a> </li>
+	</ul>
+</body>
+</html>
+```
+
+### `Exercise1.java`
+
+```
+package exercises;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+
+2.Please give the source code statement for handling a HTTP POST request in a servlet
+with parameter p1 and extract the value of it and convert to the Integer if the case.
+ */
+@WebServlet("/Exercise1")
+public class Exercise1 extends HttpServlet{
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Exercise1() {
+		super();
+
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		resp.setContentType("text/html");
+		String p1 =req.getParameter("p1");
+		if(p1==null || p1.length() == 0) {
+			throw new ServletException();
+		}else {
+			Integer intP1= Integer.parseInt(p1);
+			PrintWriter out = resp.getWriter();
+			Utils.generateHTML(out, "divID1", "Response Exercise 1", intP1.toString());
+			out.close();
+		}
+	}
+
+
+
+}
+
+```
+
+## JSP steps (with jsp/ jspx)
+
+1. In Eclipse `Create new Dynamic Project`
+2. Create in `src/main/java` a package `exercises`
+3. Create in `src/webapp` `indexWithBeans.jsp`
+4. Create a `Utils` class to generate HTML responses more easily
+5. Add different exercises (e.g. `Exercise2.java` )
+
+### Exercise 2 - Please write down java ee/spring api the code the instantiate the bean when http
+
+request is handled.
+
+### `indexWithBeans.jsp`
+
+```
+<%@page import="java.io.PrintWriter"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Web and Cloud security - Recap</title>
+</head>
+<body  >
+
+
+	<h3>Web and Cloud security - Recap</h3>
+
+	<ul>
+		<li>
+			<jsp:useBean id="ex2" class="exercises.Exercise2" />
+			<%
+		 			ex2.setName("Exercise 2 MAMA LOR de HOTI");
+				ex2.printExercise2(out, "divID2", "Response Exercise 2", ex2.getName());
+			%>
+		</li>
+
+	</ul>
+</body>
+</html>
+```
+
+### `Exercise2.java`
+
+```
+package exercises;
+
+import java.io.IOException;
+
+
+import javax.servlet.jsp.JspWriter;
+
+public class Exercise2 {
+	private String name;
+	private int age;
+
+	public Exercise2(String name, int age) {
+		super();
+		this.name = name;
+		this.age = age;
+	}
+
+	public Exercise2() {
+		super();
+	}
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public void printExercise2(JspWriter out, String divId, String title, String parameter) throws IOException {
+		Utils.generateHTML(out, divId, title, parameter);
+	}
+
+}
+
+```
+
+### `Utils.java`
+
+```
+package exercises;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.jsp.JspWriter;
+
+public class Utils {
+
+	public static void generateHTML(PrintWriter out, String divId, String title, String parameter) {
+		 out.write("<html><body><div id='"+ divId +"'>");
+		 out.write("<h2>" + title +"</h2>");
+		 out.write("<p>param1: " + parameter + "</p>");
+		 out.write("</div></body></html>");
+
+
+	}
+	public static void generateHTML(JspWriter out, String divId, String title, String parameter) throws IOException {
+
+		 out.print("<html><body><div id='"+ divId +"'>");
+		 out.print("<h2>" + title +"</h2>");
+		 out.print("<p>param1: " + parameter + "</p>");
+		 out.print("</div></body></html>");
+
+
+	}
+}
+
+
+```
+
+## ASP theory
+
+1. Difference between Authentication and Authorization
+
+-   <strong>Authentication</strong> – who you are ?
+-   <strong>Authorization</strong> – what you want to do?
+
+2. Write an example for ASP.NET Core showing how we can restrict the access to all the actions in a controller only to authenticated users.
+
+<strong>The following code limits access to the `AccountController` to authenticated users:
+You can also use the `AllowAnonymous` attribute to allow access by non-authenticated users to individual actions.</strong>
+
+```
+[Authorize]
+public class AccountController : Controller
+{
+    [AllowAnonymous]
+    public ActionResult Login()
+    {
+    }
+
+    public ActionResult Logout()
+    {
+    }
+}
+```
+
+3. What security vulnerabilities do you identify in the following code? How would you solve them?
+
+```
+[Authorize]
+public class TestController()
+{
+    [HttpPost][ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index()
+    {
+    var user = await GetCurrentUserAsync();
+    ....
+    }
+    public async Task<AppUser> GetCurrentUserAsync()
+    {
+    return await _userManager.GetUserAsync(HttpContext.User);
+    }
+}
+
+```
+
+-   <strong>The `[ValidateAntiForgeryToken]` is added to prevent CSRF attacks ASP.NET Core is adding an element to the form tags.
+-   What element, what does it contain and for what purpose?
+-   -   Its an hidden input element used to create a token to hide the session cookie</strong>
+
+4.  Against what types of attacks we use `[ValidateAntiForgeryToken]`?
+
+-   <strong>Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated</strong>
+
+5. CSRF – Cross Site Request Forgery Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
+
+-   <strong>The Asp.net MVC `AntiForgeryToken` won't work through `HTTP GET`, because it relies on cookies which rely on `HTTP POST` (it uses the `"Double Submit Cookies"` technique described in the OWASP XSRF Prevention Cheat Sheet). You can also additionally protect the cookies sent to the client by setting the as httponly, so they cannot be spoofed via a script.</strong>
+
+6. Against what types of attacks we use `[ValidateAntiForgeryToken]`?
+
+-   <strong>Cross-Site Request Forgery (CSRF)</strong>
+
+7. Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
+
+-   <strong>No</strong>
+-   <strong> The Asp.net MVC `AntiForgeryToken` won't work through `HTTP GET`, because it relies on cookies which rely on `HTTP POST` (it uses the `"Double Submit Cookies"` technique described in the OWASP XSRF Prevention Cheat Sheet). You can also additionally protect the cookies sent to the client by setting the as httponly, so they cannot be spoofed via a script.</strong>
+-   Its only necessary for unsafe `HTTP VERBS` such as <strong>POST</strong>, <strong>PATCH</strong>, <strong>PUT</strong> ,<strong>DELETE</strong>
+
+8. Write two different approaches for performing validations on the viewmodel received by an action as a parameter?
+
+-   <strong>Declarative</strong> and <strong>imperative</strong>
