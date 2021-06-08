@@ -5,7 +5,9 @@ This readme contains all the steps for developing practic example of
 
 -   JAVA REST
 -   Node REST
--   JSP (without template JSP/JSPX)
+-   JSP (HTML + Java Servlet)
+-   SERVLET ( only Java )
+-   JSP + SERVLET
 -   ASP Theory
 
 ## JavaREST steps
@@ -385,7 +387,7 @@ app.post('/sum', (req, res) => {
 
 ---
 
-## JSP steps (without jsp/ jspx)
+## JSP (HTML + Java Servlet)
 
 1. In Eclipse `Create new Dynamic Project`
 2. Create in `src/main/java` a package `exercises`
@@ -492,19 +494,7 @@ public class Exercise1 extends HttpServlet{
 
 ```
 
----
-
-## JSP steps (with jsp/ jspx)
-
-1. In Eclipse `Create new Dynamic Project`
-2. Create in `src/main/java` a package `exercises`
-3. Create in `src/webapp` `indexWithBeans.jsp`
-4. Create a `Utils` class to generate HTML responses more easily
-5. Add different exercises (e.g. `Exercise2.java` )
-
-### Exercise 2 - Please write down java ee/spring api the code the instantiate the bean when http
-
-request is handled.
+### Exercise 2 - Please write down java ee/spring api the code the instantiate the bean when http request is handled.
 
 ### `indexWithBeans.jsp`
 
@@ -616,6 +606,14 @@ public class Utils {
 
 ```
 
+---
+
+## SERVLET ( only Java )
+
+1. In Eclipse `Create new Dynamic Project`
+2. Create in `src/main/java` a package `exercises`
+3. Add different exercises (e.g. `Exercise2.java` )
+
 ### Exercise 3 - Write the code for jsp bean instantiation and specify the concurrency and security issues
 
 ```
@@ -642,7 +640,7 @@ beanName="packageName.className | <%= expression >" >
 1. Suppose you are running this `ShowSession.java` that shows some cookies
 2. You create session with nodejs and you highjack the initial session with the cookies
 
-### 1. Suppose you are running this `ShowSession.java` that shows some cookies
+##### 1. Suppose you are running this `ShowSession.java` that shows some cookies
 
 ```
 package eu.ase.httpservlet;
@@ -733,7 +731,7 @@ public class SetGetCookie extends HttpServlet {
 }
 ```
 
-### 2. You create session with nodejs and you highjack the initial session with the cookies
+##### 2. You create session with nodejs and you highjack the initial session with the cookies
 
 -   PS replace
 -   -   `headers: { Cookie: 'JSESSIONID=3FA3C280D9596DE5995FA4EF66FAF1F4' }` with
@@ -829,6 +827,38 @@ req.end();
 </body>
 </html>
 ```
+
+### Exercise 6 -If you are in the JSP page with the following source code:
+
+-   What value will have `accessCount` after 2 connected browsers which are doing 2 HTPP requests each for the JSP page?
+
+```
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<ul>
+		<li>
+			<b>Declaration (plus expression).</b>
+			<br/>
+			<%!private int accessCount = 0;%>
+                        Accesses to page since server reboot: <%=++accessCount%>
+		</li>
+	</ul>
+</body>
+</html>
+```
+
+-   <strong>Answer: 4 (Watchout for prefix or postfix)</strong>
+-   -   `++accessCount` - first time is 1
+-   -   `accessCount++` - first time is 0
+
+## JSP + SERVLET
 
 ### Exercise 6 - Please give the source code statement for handling a HTTP POST request in a JSP and instantiate a bean for inserting the parameters values into a relational database
 
@@ -964,36 +994,6 @@ public class Exercise6 extends HttpServlet {
 </body>
 </html>
 ```
-
-### Exercise 7 -If you are in the JSP page with the following source code:
-
--   What value will have `accessCount` after 2 connected browsers which are doing 2 HTPP requests each for the JSP page?
-
-```
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body>
-	<ul>
-		<li>
-			<b>Declaration (plus expression).</b>
-			<br/>
-			<%!private int accessCount = 0;%>
-                        Accesses to page since server reboot: <%=++accessCount%>
-		</li>
-	</ul>
-</body>
-</html>
-```
-
--   <strong>Answer: 4 (Watchout for prefix or postfix)</strong>
--   -   `++accessCount` - first time is 1
--   -   `accessCount++` - first time is 0
 
 ### Exercise 8 - Create a JSP that take a Http Post and have as payload a JSON object and display it
 
