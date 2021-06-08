@@ -812,6 +812,141 @@ req.end();
 </html>
 ```
 
+### Exercise 6 - Please give the source code statement for handling a HTTP POST request in a JSP and instantiate a bean for inserting the parameters values into a relational database
+
+#### `Exercise6.java`
+
+```
+package exercises;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/Exercise6")
+public class Exercise6 extends HttpServlet {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Exercise6() {
+		super();
+	}
+
+	public void duplicate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String first_name = req.getParameter("first_name");
+		String last_name = req.getParameter("last_name");
+		String city_name = req.getParameter("city_name");
+		String email = req.getParameter("email");
+		System.out.println(first_name + " " + last_name + " " + city_name + " " + email);
+		try {
+			PrintWriter out = resp.getWriter();
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "");
+			String insertStatement = "insert into users values(?,?,?,?)";
+			PreparedStatement pStatement = conn.prepareStatement(insertStatement);
+			pStatement.setString(1, first_name);
+			pStatement.setString(2, last_name);
+			pStatement.setString(3, city_name);
+			pStatement.setString(4, email);
+			int row = pStatement.executeUpdate();
+			resp.setStatus(row, "Data is successfully inserted!");
+			out.println("Data is successfully inserted!");
+			out.close();
+
+		} catch (Exception e) {
+			System.out.print(e);
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		this.duplicate(req, resp);
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		this.duplicate(req, resp);
+	}
+
+}
+
+```
+
+#### `Exercise6.jsp`
+
+```
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+	<jsp:useBean id="Exercise6" class="exercises.Exercise6"></jsp:useBean>
+</head>
+<body>
+
+
+	<form method="post" action="Exercise6">
+	First name:<br>
+	<input type="text" name="first_name">
+	<br>
+	Last name:<br>
+	<input type="text" name="last_name">
+	<br>
+	City name:<br>
+	<input type="text" name="city_name">
+	<br>
+	Email Id:<br>
+	<input type="email" name="email">
+	<br><br>
+	<input type="submit" value="submit">
+	</form>
+
+</body>
+</html>
+```
+
+#### `Index.html`
+
+```
+<%@ page import="java.util.*"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Web and Cloud security - Recap</title>
+</head>
+<body>
+
+
+	<h3>Web and Cloud security - Recap</h3>
+
+	<ul>
+			<!-- http://localhost:8080/Web_Recap/Exercise1?p1=443 -->
+		<li><a href="Exercise1" target="_blank">Exercise 1 (doPost)</a> </li>
+		<li><a href="Exercise6" target="_blank">Exercise 6 (doPost)</a> </li>
+
+	</ul>
+</body>
+</html>
+```
+
 ---
 
 ## ASP theory
@@ -918,3 +1053,38 @@ namespace Controllers
     }
 }
 ```
+
+10. Please define the route that will call the `“Edit”` action of the `“ProductController”` with a `“productId”` parameter for the following url `“Product/1/Edit”`?
+
+```
+endpoints.MapControllerRoute("edit", "Product/{productId}/Edit", new { Controller = "ProductController", action = "Edit" });
+```
+
+11. Are we able to check in a View if the currently authenticated user has a certain role? Write the code that only displays a div if the user has the `"Management"` role.
+
+```
+@if (User.IsInRole("Management"))
+{
+    <div>Classified information</div>
+}
+```
+
+12. What approaches can be used to send data between an Action and the View?
+    <strong>ViewBag / ViewData</strong>
+
+13. In the “ConfigureServices” method let's say that you have
+    `services.AddTransient<IProductRepository, ProductRepository>();` How many times will the ProductReporitory be instantiated if we ask for it in 5 separate requests made at the same time?
+
+-   <strong>5 times because:</strong>
+
+<strong>Transient objects are always different; a new instance is provided to every controller and every service.
+Scoped objects are the same within a request, but different across different requests.
+Singleton objects are the same for every object and every request.</strong>
+
+-   ##### Life time 1:
+
+-   -   ![Lifetimes 1](lifetimes1.png)
+
+-   ##### Life time 2:
+
+-   -   ![Lifetimes 1](lifetimes2.png)
