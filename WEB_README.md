@@ -1149,14 +1149,14 @@ public class Exercise8 extends HttpServlet{
 
 ## ASP theory
 
-1. Difference between Authentication and Authorization
+### 1. Difference between Authentication and Authorization
 
 -   <strong>Authentication</strong> – who you are ?
 -   <strong>Authorization</strong> – what you want to do?
 
 In it’s simplest form, adding the `[Authorize]` attribute to a controller or action method will limit access to that controller or action method to users who are authenticated. That is, only users who are logged in will be able to access those controllers or action methods.
 
-2. Write an example for ASP.NET Core showing how we can restrict the access to all the actions in a controller only to authenticated users.
+### 2. Write an example for ASP.NET Core showing how we can restrict the access to all the actions in a controller only to authenticated users.
 
 <strong>The following code limits access to the `AccountController` to authenticated users:
 You can also use the `AllowAnonymous` attribute to allow access by non-authenticated users to individual actions.</strong>
@@ -1176,7 +1176,7 @@ public class AccountController : Controller
 }
 ```
 
-3. What security vulnerabilities do you identify in the following code? How would you solve them?
+### 3. What security vulnerabilities do you identify in the following code? How would you solve them?
 
 ```
 [Authorize]
@@ -1200,29 +1200,29 @@ public class TestController()
 -   What element, what does it contain and for what purpose?
 -   -   Its an hidden input element used to create a token to hide the session cookie</strong>
 
-4.  Against what types of attacks we use `[ValidateAntiForgeryToken]`?
+### 4. Against what types of attacks we use `[ValidateAntiForgeryToken]`?
 
 -   <strong>Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they’re currently authenticated</strong>
 
-5. CSRF – Cross Site Request Forgery Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
+### 5. CSRF – Cross Site Request Forgery Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
 
 -   <strong>The Asp.net MVC `AntiForgeryToken` won't work through `HTTP GET`, because it relies on cookies which rely on `HTTP POST` (it uses the `"Double Submit Cookies"` technique described in the OWASP XSRF Prevention Cheat Sheet). You can also additionally protect the cookies sent to the client by setting the as httponly, so they cannot be spoofed via a script.</strong>
 
-6. Against what types of attacks we use `[ValidateAntiForgeryToken]`?
+### 6. Against what types of attacks we use `[ValidateAntiForgeryToken]`?
 
 -   <strong>Cross-Site Request Forgery (CSRF)</strong>
 
-7. Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
+### 7. Should actions decorated with `[HttpGet]` be protected with `[ValidateAntiForgeryToken]`?
 
 -   <strong>No</strong>
 -   <strong> The Asp.net MVC `AntiForgeryToken` won't work through `HTTP GET`, because it relies on cookies which rely on `HTTP POST` (it uses the `"Double Submit Cookies"` technique described in the OWASP XSRF Prevention Cheat Sheet). You can also additionally protect the cookies sent to the client by setting the as httponly, so they cannot be spoofed via a script.</strong>
 -   Its only necessary for unsafe `HTTP VERBS` such as <strong>POST</strong>, <strong>PATCH</strong>, <strong>PUT</strong> ,<strong>DELETE</strong>
 
-8. Write two different approaches for performing validations on the viewmodel received by an action as a parameter?
+### 8. Write two different approaches for performing validations on the viewmodel received by an action as a parameter?
 
 -   <strong>Declarative</strong> and <strong>imperative</strong>
 
-9. Write the code for a controller having an action than adds a new user with the username `“test@test.com”` and password `“Password1”`.
+### 9. Write the code for a controller having an action than adds a new user with the username `“test@test.com”` and password `“Password1”`.
 
 ```
 using Microsoft.AspNetCore.Authorization;
@@ -1254,13 +1254,13 @@ namespace Controllers
 }
 ```
 
-10. Please define the route that will call the `“Edit”` action of the `“ProductController”` with a `“productId”` parameter for the following url `“Product/1/Edit”`?
+### 10. Please define the route that will call the `“Edit”` action of the `“ProductController”` with a `“productId”` parameter for the following url `“Product/1/Edit”`?
 
 ```
 endpoints.MapControllerRoute("edit", "Product/{productId}/Edit", new { Controller = "ProductController", action = "Edit" });
 ```
 
-11. Are we able to check in a View if the currently authenticated user has a certain role? Write the code that only displays a div if the user has the `"Management"` role.
+### 11. Are we able to check in a View if the currently authenticated user has a certain role? Write the code that only displays a div if the user has the `"Management"` role.
 
 ```
 @if (User.IsInRole("Management"))
@@ -1269,10 +1269,12 @@ endpoints.MapControllerRoute("edit", "Product/{productId}/Edit", new { Controlle
 }
 ```
 
-12. What approaches can be used to send data between an Action and the View?
+### 12. What approaches can be used to send data between an Action and the View?
+
     <strong>ViewBag / ViewData</strong>
 
-13. In the “ConfigureServices” method let's say that you have
+### 13. In the “ConfigureServices” method let's say that you have
+
     `services.AddTransient<IProductRepository, ProductRepository>();` How many times will the ProductReporitory be instantiated if we ask for it in 5 separate requests made at the same time?
 
 -   <strong>5 times because:</strong>
@@ -1289,11 +1291,11 @@ Singleton objects are the same for every object and every request.</strong>
 
 -   -   ![Lifetimes 1](lifetimes2.png)
 
-14. In the MVC pattern, should we send data between an Action and a View?
+### 14. In the MVC pattern, should we send data between an Action and a View?
 
 -   Through <strong>ViewBag / ViewData</strong>
 
-15. To prevent CSRF attacks ASP.NET Core is adding an element to the form tags.What element, what does it contain and for what purpose? Write an action that is protected?
+### 15. To prevent CSRF attacks ASP.NET Core is adding an element to the form tags.What element, what does it contain and for what purpose? Write an action that is protected?
 
 -   <strong>MVC's anti-forgery support writes a unique value to an HTTP-only cookie and then the same value is written to the form. When the page is submitted, an error is raised if the cookie value doesn't match the form value. It's important to note that the feature prevents cross site request forgeries. That is, a form from another site that posts to your site in an attempt to submit hidden content using an authenticated user's credentials. The attack involves tricking the logged in user into submitting a form, or by simply programmatically triggering a form when the page loads.The feature doesn't prevent any other type of data forgery or tampering based attacks.</strong>
 
@@ -1311,7 +1313,8 @@ Singleton objects are the same for every object and every request.</strong>
     }
 ```
 
-16. Can we check in a View if the currently authenticated user has a certain role?
+### 16. Can we check in a View if the currently authenticated user has a certain role?
+
     Write the code that only displays a `<div>` if the user has the "Management" role.
 
 ```
@@ -1321,7 +1324,7 @@ Singleton objects are the same for every object and every request.</strong>
 }
 ```
 
-17. Create an action that only can be execute by a User that has `"Management"` role
+### 17. Create an action that only can be execute by a User that has `"Management"` role
 
 ```
 public class HomeController : Controller
