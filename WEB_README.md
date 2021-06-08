@@ -1,4 +1,4 @@
-# dad-recap
+# web-recap
 
 Revision of Distributed Applications Development
 This readme contains all the steps for developing practic example of
@@ -243,6 +243,8 @@ public class ProductCatalogResource {
 
 ```
 
+---
+
 ## NodeREST steps
 
 ### More information:
@@ -381,6 +383,8 @@ app.post('/sum', (req, res) => {
 
 ```
 
+---
+
 ## JSP steps (without jsp/ jspx)
 
 1. In Eclipse `Create new Dynamic Project`
@@ -487,6 +491,8 @@ public class Exercise1 extends HttpServlet{
 }
 
 ```
+
+---
 
 ## JSP steps (with jsp/ jspx)
 
@@ -619,6 +625,18 @@ beanName="packageName.className | <%= expression >" >
 </jsp:useBean>
 ```
 
+-   When a JSP is requested for the first time or when the web app starts up, the servlet container will compile it into a class extending HttpServlet and use it during the web app's lifetime (source).JSP have a Page Directive Attributes. You can check it in the specification. Specifically, there is a attribute that you can change on the page:
+
+```
+<%@ page isThreadSafe="false" %>
+```
+
+-   -   If `false` then the JSP container shall dispatch multiple outstanding client requests, one at a time, in the order they were received, to the page implementation for processing.
+-   -   If `true` then the JSP container may choose to dispatch multiple outstanding client requests to the page simultaneously.
+
+-   Page authors using `true` must ensure that they properly synchronize access to the shared state of the page. Default is `true`. Note that even if the `isThreadSafe` attribute is `false` the JSP page author must ensure that accesses to any shared objects are properly synchronized. The objects may be shared in either the `ServletContext` or the `HttpSession`.
+-   So, if you set the `isThreadSafe` attribute to `false` (thus that the resulting servlet should implement the `SingleThreadModel`) and you make sure that your scriplet do not use objects that shared in either the `ServletContext` or the `HttpSession`, then it may be a good way to resolve the concurrency issues.
+
 ### Exercise 4 - Session hijacking - please provide a sample in node.js and other language-platform for this action
 
 1. Suppose you are running this `ShowSession.java` that shows some cookies
@@ -749,7 +767,7 @@ req.end();
 
 ```
 
-### Exercise 5 -Write the JSP which will encrypt and decrypt a parameter with AES which is coming within a HTTP request
+### Exercise 5 - Write the JSP which will encrypt and decrypt a parameter with AES which is coming within a HTTP request
 
 ```
 <%@page import="java.util.Base64"%>
@@ -947,6 +965,186 @@ public class Exercise6 extends HttpServlet {
 </html>
 ```
 
+### Exercise 7 -If you are in the JSP page with the following source code:
+
+-   What value will have `accessCount` after 2 connected browsers which are doing 2 HTPP requests each for the JSP page?
+
+```
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<ul>
+		<li>
+			<b>Declaration (plus expression).</b>
+			<br/>
+			<%!private int accessCount = 0;%>
+                        Accesses to page since server reboot: <%=++accessCount%>
+		</li>
+	</ul>
+</body>
+</html>
+```
+
+-   <strong>Answer: 4 (Watchout for prefix or postfix)</strong>
+-   -   `++accessCount` - first time is 1
+-   -   `accessCount++` - first time is 0
+
+### Exercise 8 - Create a JSP that take a Http Post and have as payload a JSON object and display it
+
+#### `Exercise8.java`
+
+```
+package exercises;
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.util.LinkedHashMap;
+import java.util.Scanner;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
+
+
+
+@WebServlet("/Exercise8")
+public class Exercise8 extends HttpServlet{
+
+	private static final long serialVersionUID = 1L;
+	private String name;
+	private int age;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public Exercise8() {
+		super();
+
+	}
+	@SuppressWarnings("resource")
+	public  String extractPostRequestBody(HttpServletRequest request) throws IOException {
+	    if ("POST".equalsIgnoreCase(request.getMethod())) {
+			Scanner s = new Scanner(request.getInputStream(), "UTF-8").useDelimiter("\\A");
+	        return s.hasNext() ? s.next() : "";
+	    }
+	    return "";
+	}
+	public void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, ParseException{
+
+		if ("POST".equalsIgnoreCase(req.getMethod())) {
+			String data = this.extractPostRequestBody(req);
+			JSONParser parser = new JSONParser(data);
+			LinkedHashMap<String, Object> fields =  parser.parseObject();
+			String nameJSON =(String)fields.get("name");
+			BigInteger ageJSON =(BigInteger)fields.get("age");
+			this.setName(nameJSON);
+			this.setAge(ageJSON.intValue());
+		    PrintWriter out = resp.getWriter();
+		    this.printValues(out);
+		    out.close();
+		}else {
+		    PrintWriter out = resp.getWriter();
+		    out.write("<div>Access the following link : (Make a POST request)</div>");
+		    out.write("<div> http://localhost:8080/Web_Recap/Exercise8 </div>");
+		    out.write("<div>payload:</div>");
+		    out.write("{\r\n"
+		    		+ "    \"name\":\"Boala copiilor\",\r\n"
+		    		+ "    \"age\":45\r\n"
+		    		+ "}");
+			out.close();
+		}
+
+	}
+	public void printValues(PrintWriter out) {
+		out.write("<div> Name :" + this.name + "</div>");
+		out.write("<br/>");
+		out.write("<div> Age :" + this.age + "</div>");
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		try {
+			this.processRequest(req, resp);
+		} catch (ServletException | IOException | ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		try {
+			this.processRequest(req, resp);
+		} catch (ServletException | IOException | ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+```
+
+#### `Exercise8.jsp`
+
+```
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+</head>
+<body>
+	<jsp:useBean id="object" class="exercises.Exercise8"></jsp:useBean>
+</body>
+</html>
+```
+
+#### `Index.html`
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Web and Cloud security - Revision </title>
+</head>
+<body>
+	<h3>Web and Cloud security - Revision</h3>
+	<ul>
+			<!-- http://localhost:8080/Web_Recap/Exercise1?p1=443 -->
+		<li><a href="Exercise1" target="_blank">Exercise 1 (doPost)</a> </li>
+		<li><a href="Exercise6" target="_blank">Exercise 6 (doPost)</a> </li>
+		<li><a href="Exercise8" target="_blank">Exercise 8 (doPost JSON)</a> </li>
+	</ul>
+</body>
+</html>
+```
+
 ---
 
 ## ASP theory
@@ -955,6 +1153,8 @@ public class Exercise6 extends HttpServlet {
 
 -   <strong>Authentication</strong> – who you are ?
 -   <strong>Authorization</strong> – what you want to do?
+
+In it’s simplest form, adding the `[Authorize]` attribute to a controller or action method will limit access to that controller or action method to users who are authenticated. That is, only users who are logged in will be able to access those controllers or action methods.
 
 2. Write an example for ASP.NET Core showing how we can restrict the access to all the actions in a controller only to authenticated users.
 
@@ -1088,3 +1288,48 @@ Singleton objects are the same for every object and every request.</strong>
 -   ##### Life time 2:
 
 -   -   ![Lifetimes 1](lifetimes2.png)
+
+14. In the MVC pattern, should we send data between an Action and a View?
+
+-   Through <strong>ViewBag / ViewData</strong>
+
+15. To prevent CSRF attacks ASP.NET Core is adding an element to the form tags.What element, what does it contain and for what purpose? Write an action that is protected?
+
+-   <strong>MVC's anti-forgery support writes a unique value to an HTTP-only cookie and then the same value is written to the form. When the page is submitted, an error is raised if the cookie value doesn't match the form value. It's important to note that the feature prevents cross site request forgeries. That is, a form from another site that posts to your site in an attempt to submit hidden content using an authenticated user's credentials. The attack involves tricking the logged in user into submitting a form, or by simply programmatically triggering a form when the page loads.The feature doesn't prevent any other type of data forgery or tampering based attacks.</strong>
+
+```
+  public class HomeController : Controller
+    {
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Edit( User user)
+        {
+            return View(user);
+        }
+    }
+```
+
+16. Can we check in a View if the currently authenticated user has a certain role?
+    Write the code that only displays a `<div>` if the user has the "Management" role.
+
+```
+@if( User.IsInRole("Management") )
+{
+    <div> whatever </div>
+}
+```
+
+17. Create an action that only can be execute by a User that has `"Management"` role
+
+```
+public class HomeController : Controller
+    {
+        [Authorize(Roles = "Management")]
+        public IActionResult Edit( User user)
+        {
+            return View(user);
+        }
+    }
+```
