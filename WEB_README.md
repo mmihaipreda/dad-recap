@@ -610,6 +610,210 @@ public class Utils {
 
 ```
 
+### Exercise 3 - Write the code for jsp bean instantiation and specify the concurrency and security issues
+
+```
+<jsp:useBean id= "instanceName" scope= "page | request | session | application"
+class= "packageName.className" type= "packageName.className"
+beanName="packageName.className | <%= expression >" >
+</jsp:useBean>
+```
+
+### Exercise 4 - Session hijacking - please provide a sample in node.js and other language-platform for this action
+
+1. Suppose you are running this `ShowSession.java` that shows some cookies
+2. You create session with nodejs and you highjack the initial session with the cookies
+
+### 1. Suppose you are running this `ShowSession.java` that shows some cookies
+
+```
+package eu.ase.httpservlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class SetGetCookie
+ */
+@WebServlet("/SetGetCookie")
+public class SetGetCookie extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public SetGetCookie() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public static final int SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
+
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+	}
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+	}
+
+	public void processRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		String title = "Set Cookie";
+		StringBuffer body = new StringBuffer("<br/>");
+
+		// cookie play
+		Cookie[] cookies = request.getCookies();
+
+		// if cookies object is null, it means that no cookie was set before
+
+		if (cookies != null) {
+
+			for (int i = 0; i < cookies.length; i++) {
+				Cookie cookie = cookies[i];
+				if ("CookieGigel".equals(cookie.getName())) {
+					body.append("<br/><font color=\"red\"> - ").append(cookie.getName()).append(" : ")
+							.append(cookie.getValue()).append("</font>");
+				} else if ("CookieIon".equals(cookie.getName())) {
+					body.append("<br/><font color=\"green\"> - ").append(cookie.getName()).append(" : ")
+							.append(cookie.getValue()).append("</font>");
+				} else {
+					body.append("<br/><font color=\"blue\"> - ").append(cookie.getName()).append(" : ")
+							.append(cookie.getValue()).append("</font>");
+				}
+			} // end for
+
+		} else {
+			// create cookie 1 - implicit value in seconds of cookie is within the session
+			Cookie userCookie = new Cookie("CookieGigel", "CucuBau");
+			response.addCookie(userCookie);
+
+			// create cookie 2 - is per year
+			Cookie userCookie2 = new Cookie("CookieIon", "IONIONION");
+			userCookie2.setMaxAge(SECONDS_PER_YEAR);
+			response.addCookie(userCookie2);
+
+			body.append("<br/><font color=\"red\">").append(" - Cookie: CookieGigel and CookieIon ")
+					.append(" added now</font>");
+		}
+
+		out.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 " + "Transitional//EN\">\n" + "<HTML>\n"
+				+ "<HEAD><TITLE>" + title + "</TITLE></HEAD>\n");
+
+		out.println("<BODY BGCOLOR=\"#FDF5E6\">\n" + body + "</BODY></HTML>");
+
+	}
+}
+```
+
+### 2. You create session with nodejs and you highjack the initial session with the cookies
+
+-   PS replace
+-   -   `headers: { Cookie: 'JSESSIONID=3FA3C280D9596DE5995FA4EF66FAF1F4' }` with
+-   -   `headers: { Cookie: 'JSESSIONID=<SESSION ID>' }`
+
+```
+var http = require('http');
+var options = {
+	hostname: '127.0.0.1',
+	port: '8080',
+	path: '/s04_servlet/ShowSession',
+	method: 'GET',
+	headers: { Cookie: 'JSESSIONID=3FA3C280D9596DE5995FA4EF66FAF1F4' },
+};
+var results = '';
+var req = http.request(options, function (res) {
+	res.on('data', function (chunk) {
+		results = results + chunk;
+		console.log(results);
+	});
+	res.on('end', function () {
+		console.log('end response result');
+	});
+});
+
+req.on('error', function (e) {
+	console.log('error: ' + e);
+});
+
+req.end();
+
+```
+
+### Exercise 5 -Write the JSP which will encrypt and decrypt a parameter with AES which is coming within a HTTP request
+
+```
+<%@page import="java.util.Base64"%>
+<%@page import="javax.crypto.SecretKey"%>
+<%@page import="javax.crypto.KeyGenerator"%>
+<%@page import="java.security.Key"%>
+<%@page import="javax.crypto.Cipher"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<!-- ### Exercise 5 -Write the JSP which will encrypt and decrypt a parameter with AES which is coming within a HTTP request -->
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<%
+	response.setContentType("text/html");
+	String input =request.getParameter("input");
+/***************************ENCRYPTION********************************************************/
+	String algorithm="AES/ECB/PKCS5Padding";
+    // init key
+	KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+    keyGenerator.init(128);
+    SecretKey key = keyGenerator.generateKey();
+	//init AES cipher
+
+	Cipher aesCipher =  Cipher.getInstance(algorithm);
+	aesCipher.init(Cipher.ENCRYPT_MODE, key);
+	byte[] cipherText = aesCipher.doFinal(input.getBytes());
+
+   String encodedEncrypted = Base64.getEncoder().encodeToString(cipherText);
+   /******************************************************************************************/
+
+   /***************************DECRYPTION*****************************************************/
+
+    aesCipher = Cipher.getInstance(algorithm);
+    aesCipher.init(Cipher.DECRYPT_MODE, key);
+    byte[] plainText = aesCipher.doFinal(Base64.getDecoder().decode(encodedEncrypted));
+    String decoded = new String(plainText);
+
+   /******************************************************************************************/
+	%>
+	<div>
+	INPUT :<%=input %>
+	</div>
+	<br/>
+
+	<div>
+	ENCRYPTED AND ENCODED :<%=encodedEncrypted %>
+	</div>
+	<br/>
+
+	<div>
+	DECODED :<%=decoded %>
+	</div>
+	<br/>
+</body>
+</html>
+```
+
+---
+
 ## ASP theory
 
 1. Difference between Authentication and Authorization
@@ -682,3 +886,35 @@ public class TestController()
 8. Write two different approaches for performing validations on the viewmodel received by an action as a parameter?
 
 -   <strong>Declarative</strong> and <strong>imperative</strong>
+
+9. Write the code for a controller having an action than adds a new user with the username `“test@test.com”` and password `“Password1”`.
+
+```
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal.LoginModel;
+
+namespace Controllers
+{
+    public class AddController : Controller
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult>  AddUser()
+        {
+            var user = new IdentityUser { UserName = "test@test.com", Email = "test@test.com" };
+            var result = await _userManager.CreateAsync(user, "Password1");
+            return View();
+        }
+
+    }
+}
+```
