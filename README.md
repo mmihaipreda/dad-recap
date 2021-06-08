@@ -378,3 +378,6 @@ app.post('/sum', (req, res) => {
 ]
 
 ```
+
+[DAD recap](src/DAD_README.md)
+[WEB recap](src/WEB_README.md)
