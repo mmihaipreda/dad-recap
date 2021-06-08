@@ -9,6 +9,7 @@ This readme contains all the steps for developing practic example of
 -   SERVLET ( only Java )
 -   JSP + SERVLET
 -   ASP Theory
+-   WebSockets
 
 ## JavaREST steps
 
@@ -380,6 +381,372 @@ app.post('/sum', (req, res) => {
 		"id": 11,
 		"title": "vero rerum temporibus dolor",
 		"completed": true
+	}
+]
+
+```
+
+### Another example of REST server and client
+
+### Description
+
+```
+   1. REST Client (in a web page) which send REST requests (POST and DELETE) for an additional JSON for the user
+   2. Enhance the restServer.js from the lecture and lab in order to:
+   2.1) encrypt/decrypt json payload
+   2.2) insert in users.json file and respectively delete the user from the users.json
+   2.3) optional replace users.json file with a connection to MongoDB instance
+
+```
+
+1. In `src`, create a folder `public`
+1.  1. Create the following files : `client.js`, `client.css`, `client.html`
+1. In `src`, create the following files: `server.js`, `users.json`, `usersBackup.json`
+
+#### `client.html`
+
+```
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Homework - Exercise 2 and 3</title>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"
+			integrity="sha512-nOQuvD9nKirvxDdvQ9OMqe2dgapbPB7vYAMrzJihw5m+aNcf0dX53m6YxM4LgA9u8e9eg9QX+/+mPu8kCNpV2A=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+		<script
+			src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+			integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		></script>
+		<link rel="stylesheet" href="./client.css" />
+	</head>
+	<body>
+		<div id="information">
+			Readme:
+			<ul>
+				<li>You need internet connection (i used CDN link for some libraries)</li>
+				<li>The address of server is http://localhost:8338</li>
+				<li>
+					in order to start use <b><i>npm install</i></b> then <b><i>npm start</i></b>
+				</li>
+				<li>
+					In order to add a user (to exemplify the POST request) fill the form and hit <b><i>Add User</i></b>
+				</li>
+				<li>In order to delete a user (to exemplify the DELETE request) double click on any row</li>
+				<li>
+					For convenince, click on <b><i>Load backup</i></b> to get a sample of users
+				</li>
+				<li>
+					Both POST and DELETE requests encrypts the payload at <b><i>Client</i></b> and decrypts it at <b><i>Server</i></b> and vice-versa (Exercise 3)
+				</li>
+				<li>Both POST and DELETE requests also read and rewrite the JSON file (Exercise 3)</li>
+				<li>In the right you also have the actions performed mini console, to see each action that you have performed</li>
+			</ul>
+		</div>
+		<div id="content">
+			<div class="form-container">
+				<div class="field">
+					<label for="name">Name</label>
+					<input type="text" id="name" />
+				</div>
+				<div class="field">
+					<label for="surname">Surname</label>
+					<input type="text" id="surname" />
+				</div>
+				<div class="field">
+					<label for="age">Age</label>
+					<input type="number" id="age" />
+				</div>
+				<button id="addUser">Add User</button>
+			</div>
+			<div id="table"></div>
+		</div>
+		<button id="loadBackup">Load backup</button>
+		<div id="actionsPerformed"></div>
+		<script type="text/javascript" src="./client.js"></script>
+	</body>
+</html>
+
+```
+
+#### `client.css`
+
+```
+.form-container {
+	display: grid;
+	width: 300px;
+	margin: auto;
+}
+.field {
+	display: grid;
+	margin-top: 20px;
+	grid-template-columns: 28% auto;
+}
+#addUser {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.row-highlight:hover {
+	background: rgb(12, 73, 102);
+	color: rgb(255, 255, 255);
+	cursor: pointer;
+}
+#content {
+	text-align: center;
+}
+#table {
+	margin: auto;
+	width: 300px;
+}
+#information {
+	top: 20px;
+	padding: 50px;
+	font-size: 1.2rem;
+	background: aliceblue;
+	margin-bottom: 20px;
+}
+#loadBackup {
+	position: absolute;
+	top: 56%;
+}
+#actionsPerformed {
+	background: #7b8792;
+	height: 250px;
+	width: 431px;
+	left: 64%;
+	top: 44%;
+	position: absolute;
+	color: white;
+	padding: 16px;
+	overflow-y: scroll;
+}
+
+```
+
+#### `client.js`
+
+```
+window.onload = async (event) => {
+	const actionsPerformedBtn = document.getElementById('actionsPerformed');
+	const addUserBtn = document.getElementById('addUser');
+	const loadBackupBtn = document.getElementById('loadBackup');
+	const nameBtn = document.getElementById('name');
+	const surnameBtn = document.getElementById('surname');
+	const ageBtn = document.getElementById('age');
+	actionsPerformedBtn.innerHTML += `[${new Date().toLocaleTimeString()}]  table has been successfully generated <br/>`;
+	const key = 'secret key 123';
+	const encrypt = (data) => {
+		return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+	};
+
+	const decrypt = (data) => {
+		const bytes = CryptoJS.AES.decrypt(data, key);
+		return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+	};
+
+	async function generateTable() {
+		const data = await axios.get('http://localhost:8338/listUsers');
+		const users = decrypt(data.data);
+		const myTableDiv = document.getElementById('table');
+		const table = document.createElement('TABLE');
+		const headerNames = [`id`, `name`, `surname`, `age`];
+		for (let i = 0; i < 4; i++) {
+			const th = document.createElement('th');
+			th.innerHTML = headerNames[i];
+			table.appendChild(th);
+		}
+		table.border = '1';
+		const tableBody = document.createElement('TBODY');
+		table.appendChild(tableBody);
+		for (let i = 0; i < users.length; i++) {
+			const tr = document.createElement('TR');
+			tr.classList.add('row-highlight');
+			tableBody.appendChild(tr);
+			tr.addEventListener('dblclick', async () => {
+				const deleted = await axios.delete('http://localhost:8338/deleteUser', { data: { payload: encrypt({ index: i }) } });
+				const data = decrypt(deleted.data.payload);
+
+				actionsPerformedBtn.innerHTML += `[${new Date().toLocaleTimeString()}]  ${data.message} <br/>`;
+				setTimeout(async () => {
+					await refreshTable();
+				}, 200);
+			});
+			for (let j = 0; j < headerNames.length; j++) {
+				const td = document.createElement('TD');
+				td.width = '75';
+				td.appendChild(document.createTextNode(users[i][`${headerNames[j]}`]));
+				tr.appendChild(td);
+			}
+		}
+		myTableDiv.appendChild(table);
+	}
+	generateTable();
+
+	const refreshTable = async () => {
+		const parent = document.getElementById('table');
+		while (parent.firstChild) {
+			parent.firstChild.remove();
+		}
+		await generateTable();
+	};
+
+	const addUser = async () => {
+		const user = {
+			name: nameBtn.value,
+			surname: surnameBtn.value,
+			age: ageBtn.value,
+			id: '',
+		};
+		const addedUser = await axios.post('http://localhost:8338/addUser', { payload: encrypt(user) });
+		const data = decrypt(addedUser.data.payload);
+		actionsPerformedBtn.innerHTML += `[${new Date().toLocaleTimeString()}]  ${data.message} <br/>`;
+		setTimeout(async () => {
+			await refreshTable();
+		}, 200);
+	};
+
+	async function loadBackup() {
+		const backup = await axios.get('http://localhost:8338/backupUsers');
+		const data = decrypt(backup.data.payload);
+		actionsPerformedBtn.innerHTML += `[${new Date().toLocaleTimeString()}]  ${data.message} <br/>`;
+		setTimeout(async () => {
+			await refreshTable();
+		}, 200);
+	}
+	addUserBtn.addEventListener('click', addUser);
+	loadBackupBtn.addEventListener('click', loadBackup);
+};
+
+```
+
+#### `server.js`
+
+```
+const express = require('express');
+const app = express();
+const fs = require('fs');
+const CryptoJS = require('crypto-js');
+
+app.use(express.static('public'));
+app.use(express.json());
+
+const key = 'secret key 123';
+const encrypt = (data) => {
+	return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+};
+
+const decrypt = (data) => {
+	const bytes = CryptoJS.AES.decrypt(data, key);
+	return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+};
+
+app.get('/', (req, res) => {
+	res.status(301).redirect('http://localhost:8338/client.html');
+});
+app.get('/listUsers', function (req, res) {
+	// fs.readFile(`${__dirname}/users.json`, 'utf8', function (err, data) {
+	// 	res.end(encrypt(data));
+	// });
+	let data = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf8'));
+
+	res.status(200).json(encrypt(data));
+});
+
+app.get('/backupUsers', function (req, res) {
+	let data = JSON.parse(fs.readFileSync(`${__dirname}/usersBackup.json`, 'utf8'));
+	fs.writeFileSync(`${__dirname}/users.json`, JSON.stringify(data, null, 2));
+	// let data2 = JSON.parse(fs.readFileSync(`${__dirname}/usersBackup.json`, 'utf8'));
+	res.status(200).json({ payload: encrypt({ message: `Backup has been successfully loaded` }) });
+});
+
+app.post('/addUser', function (req, res) {
+	const body = req.body;
+	const newUser = decrypt(body.payload);
+	let data = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf8'));
+	newUser.id = data.length + 1;
+	data.push(newUser);
+	fs.writeFileSync(`${__dirname}/users.json`, JSON.stringify(data, null, 2));
+	res.status(201).json({ payload: encrypt({ message: `A user has been added successfully` }) });
+});
+
+app.delete('/deleteUser', function (req, res) {
+	const body = req.body;
+	const index = decrypt(body.payload);
+	let data = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf8'));
+	data.splice(index, 1);
+	fs.writeFileSync(`${__dirname}/users.json`, JSON.stringify(data, null, 2));
+	res.status(200).json({ payload: encrypt({ message: `A user has been deleted successfully` }) });
+});
+
+app.listen(8338, () => {
+	console.log(`Server is listening on port 8338...`);
+});
+
+```
+
+#### `users.json`
+
+```
+[
+	{
+		"name": "Gabriel",
+		"surname": "Luis",
+		"age": 24,
+		"id": 1
+	},
+	{
+		"name": "Stoian",
+		"surname": "Florin",
+		"age": 41,
+		"id": 2
+	},
+	{
+		"name": "Velcu",
+		"surname": "Andrei",
+		"age": 31,
+		"id": 3
+	},
+	{
+		"name": "Popescu",
+		"surname": "Dan",
+		"age": "27",
+		"id": 4
+	}
+]
+
+```
+
+#### `usersBackup.json`
+
+```
+[
+	{
+		"name": "Gabriel",
+		"surname": "Luis",
+		"age": 24,
+		"id": 1
+	},
+	{
+		"name": "Stoian",
+		"surname": "Florin",
+		"age": 41,
+		"id": 2
+	},
+	{
+		"name": "Velcu",
+		"surname": "Andrei",
+		"age": 31,
+		"id": 3
+	},
+	{
+		"name": "Popescu",
+		"surname": "Dan",
+		"age": "27",
+		"id": 4
 	}
 ]
 
@@ -1335,4 +1702,117 @@ public class HomeController : Controller
             return View(user);
         }
     }
+```
+
+---
+
+## WebSockets
+
+### 1. HTML page which encrypt the JSON content with JavaScript and send the content via WS - WebSocket to a server-side program: node.js or Java.
+
+#### `client.html`
+
+```
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Homework - Exercise 1</title>
+		<script type="text/javascript" src="./node_modules/crypto-js/crypto-js.js"></script>
+		<link rel="stylesheet" href="./client.css" />
+	</head>
+	<body>
+		<div id="information">
+			Readme:
+			<ul>
+				<li>You need internet connection (i used CDN link for some libraries)</li>
+				<li>The address of server is http://localhost:8337</li>
+				<li>
+					in order to start use <b><i>npm install</i></b> then <b><i>npm start</i></b>
+				</li>
+				Flow :
+				<li>
+					<b><i>1. Client</i></b> sends an encrypted JSON
+				</li>
+				<li>
+					<b><i>2. Server</i></b> decrypts the encrypted JSON and prints it at the console.
+				</li>
+				<li>
+					<b><i>3. Server</i></b> sends an encrypted JSON to <b><i>Client</i></b>
+				</li>
+				<li>
+					<b><i>4. Client</i></b> decrypts the encrypted JSON and appends it to the div
+				</li>
+			</ul>
+		</div>
+		<div id="content"></div>
+		<script type="text/javascript" src="./client.js"></script>
+	</body>
+</html>
+
+
+```
+
+#### `client.js`
+
+```
+
+const url = 'ws://localhost:8337';
+const connection = new WebSocket(url);
+const key = 'secret key 123';
+
+connection.onopen = () => {
+	const content = document.getElementById('content');
+	const myJSON = { from: 'Client', with: 'love' };
+	const stringifiedJSON = JSON.stringify(myJSON);
+	const encrypted = CryptoJS.AES.encrypt(stringifiedJSON, key).toString();
+	content.innerHTML += `Sent message => ${encrypted}<br/>`;
+	connection.send(encrypted);
+	connection.onerror = (error) => {
+		console.log(`WebSocket error: ${error}`);
+	};
+
+	connection.onmessage = (e) => {
+		const content = document.getElementById('content');
+		const bytes = CryptoJS.AES.decrypt(e.data, key);
+		const originalText = bytes.toString(CryptoJS.enc.Utf8);
+		content.innerHTML += `Decrypted message => ${originalText}<br/>`;
+	};
+};
+```
+
+#### `client.css`
+
+```
+#information {
+	top: 20px;
+	padding: 35px;
+	font-size: 1.2rem;
+	background: aliceblue;
+	margin-bottom: 20px;
+}
+
+```
+
+#### `server.js`
+
+```
+const WebSocket = require('ws');
+const CryptoJS = require('crypto-js');
+const wss = new WebSocket.Server({ port: 8337 });
+
+const key = 'secret key 123';
+
+wss.on('connection', (ws) => {
+	ws.on('message', (message) => {
+		const bytes = CryptoJS.AES.decrypt(message, key);
+		const originalText = bytes.toString(CryptoJS.enc.Utf8);
+		console.log(`Received message => ${message}`);
+		console.log(`Decrypted message => ${originalText}`);
+		const myJSON = { from: 'Server', with: 'appreciation' };
+		const stringifiedJSON = JSON.stringify(myJSON);
+		const encrypted = CryptoJS.AES.encrypt(stringifiedJSON, key).toString();
+		ws.send(encrypted);
+	});
+});
+
 ```
