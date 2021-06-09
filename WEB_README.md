@@ -31,9 +31,9 @@ https://github.com/critoma/dad/tree/master/lectures/c08/rest/s08_jweb_jaxrs_serv
 -   -   4.1.`MyRESTServices.java`
 -   -   4.2.`ProductCatalogResource.java`
 
-###1. Create a folder in src named `bean`
+### 1. Create a folder in src named `bean`
 
-###2. Create model class/classes
+### 2. Create model class/classes
 
 #### 2.1.`Product.java`
 
