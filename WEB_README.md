@@ -1705,6 +1705,68 @@ public class HomeController : Controller
 
 ---
 
+### 18. Example of a Model Class with annotations:
+
+```
+  public class Series
+    {
+        [Key]
+        public int SeriesId { get; set; }
+
+        [Display(Name = "Title")]
+        [Required(ErrorMessage = "Provide data")]
+        [MinLength(1, ErrorMessage = "The text is too short")]
+        public string Title { get; set; }
+
+        [Display(Name = "Creator/s")]
+        [Required(ErrorMessage = "Provide data")]
+        [MinLength(1, ErrorMessage = "The text is too short")]
+        public string Creators { get; set; }
+
+        [Display(Name = "Actor/s")]
+        [Required(ErrorMessage = "Provide data")]
+        [MinLength(1, ErrorMessage = "The text is too short")]
+        public string Actors { get; set; }
+
+        [Display(Name = "Genre/s")]
+        [Required(ErrorMessage = "Provide data")]
+        [MinLength(1, ErrorMessage = "The text is too short")]
+        public string Genres { get; set; }
+
+        public DateTime? ReleaseDate { get; set; }
+
+        public string TrailerLink { get; set; }
+
+        public int? Seasons { get; set; }
+
+        public int Likes { get; set; }
+
+        public int Dislikes { get; set; }
+
+        [Required(ErrorMessage = "Provide data")]
+        public string Synopsis { get; set; }
+
+        // M:N cardinality table
+        public ICollection<SeriesWatchlist> Watchlists { get; set; }
+    }
+```
+
+```
+ public class GuestResponse
+    {
+        [Required(ErrorMessage = "Please enter your name")]
+        public string Name { get; set; }
+        [Required(ErrorMessage = "Please enter your email address")]
+        [RegularExpression(".+\\@.+\\..+",
+            ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Please enter your phone number")]
+        public string Phone { get; set; }
+        [Required(ErrorMessage = "Please specify whether you'll attend")]
+        public bool? WillAttend { get; set; }
+    }
+```
+
 ## WebSockets
 
 ### 1. HTML page which encrypt the JSON content with JavaScript and send the content via WS - WebSocket to a server-side program: node.js or Java.
