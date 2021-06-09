@@ -1707,6 +1707,18 @@ public class HomeController : Controller
 
 ### 18. Example of a Model Class with annotations:
 
+-   `[ValidateNever]`: The ValidateNeverAttribute indicates that a property or parameter should be excluded from validation.
+-   `[CreditCard]`: Validates that the property has a credit card format. Requires jQuery Validation Additional Methods.
+-   `[Compare]`: Validates that two properties in a model match.
+-   `[EmailAddress]`: Validates that the property has an email format.
+-   `[Phone]`: Validates that the property has a telephone number format.
+-   `[Range]`: Validates that the property value falls within a specified range.
+-   `[RegularExpression]`: Validates that the property value matches a specified regular expression.
+-   `[Required]`: Validates that the field is not null. See [Required] attribute for details about this attribute's behavior.
+-   `[StringLength]`: Validates that a string property value doesn't exceed a specified length limit.
+-   `[Url]`: Validates that the property has a URL format.
+-   `[Remote]`: Validates input on the client by calling an action method on the server.
+
 ```
   public class Series
     {
@@ -1757,8 +1769,7 @@ public class HomeController : Controller
         [Required(ErrorMessage = "Please enter your name")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Please enter your email address")]
-        [RegularExpression(".+\\@.+\\..+",
-            ErrorMessage = "Please enter a valid email address")]
+        [RegularExpression(".+\\@.+\\..+", ErrorMessage = "Please enter a valid email address")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please enter your phone number")]
         public string Phone { get; set; }
