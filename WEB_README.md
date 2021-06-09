@@ -1703,8 +1703,6 @@ public class HomeController : Controller
     }
 ```
 
----
-
 ### 18. Example of a Model Class with annotations:
 
 -   `[ValidateNever]`: The ValidateNeverAttribute indicates that a property or parameter should be excluded from validation.
@@ -1777,6 +1775,33 @@ public class HomeController : Controller
         public bool? WillAttend { get; set; }
     }
 ```
+
+### 19 - Declare a controller with two actions, each one of them demonstrating a different approach for checking if a user has a certain role.
+
+```
+ public class MyController : Controller
+    {
+        [Authorize(Roles = "Management")]
+        public IActionResult action1()
+        {
+            return action1();
+        }
+        public IActionResult action2()
+        {
+            if (User.IsInRole("Management"))
+            {
+                return action2();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+
+        }
+    }
+```
+
+---
 
 ## WebSockets
 
